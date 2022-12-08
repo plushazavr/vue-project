@@ -13,45 +13,45 @@
         type="text"
         placeholder="Описание"
       />
-      <button
+      <my-buttons
         @click="createPost"
-        class="btn"
-      >Опубликовать</button>
+      >Опубликовать</my-buttons>
     </form>
 </template>
 
 <style scoped>
-  .input {
-    max-width: 500px;
-    min-width: 400px;
-    border: 1px solid teal;
-    padding: 10px 15px;
-    margin: 15px 0px;
-  }
+.input {
+  max-width: 500px;
+  min-width: 400px;
+  border: 1px solid teal;
+  padding: 10px 15px;
+  margin: 15px 0px;
+}
 
-  form {
-    display: flex;
-    flex-direction: column;
-  }
+form {
+  display: flex;
+  flex-direction: column;
+}
 
-  .btn {
-    align-self: flex-start;
-    padding: 10px 15px;
-    background: none;
-    color: teal;
-    border: 1px solid teal;
-    cursor: pointer;
-  }
+.btn {
+  align-self: flex-start;
+  padding: 10px 15px;
+  background: none;
+  color: teal;
+  border: 1px solid teal;
+  cursor: pointer;
+}
 
-  .btn:hover {
-    color: white;
-    background-color: teal;
-  }
-
+.btn:hover {
+  color: white;
+  background-color: teal;
+}
 </style>
 
 <script>
+import MyButtons from './UI/MyButtons.vue';
 export default {
+  components: { MyButtons },
   data() {
     return {
       //модель поста
