@@ -21,6 +21,6 @@
 
 <script>
 export default {
-
+  name: 'my-buttons'
 }
 </script>
