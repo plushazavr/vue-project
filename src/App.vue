@@ -6,10 +6,14 @@
       <post-form @create="createPost" />
     </my-popups>
 
-    <post-list
+    <div v-if="!isLoading">
+      <post-list      
       :posts="posts"
       @remove="removePost"
-    />
+      />
+    </div>
+    
+   <div v-else>Идет загрузка...</div>
   </div>
 
 </template>
@@ -45,6 +49,7 @@ export default {
     return {
       posts: [],
       popupVisible: false,
+      isLoading: false, //лоадер загрузки постов
     }
   },
 
@@ -63,17 +68,24 @@ export default {
 
     //получаем данные по API
     async fetchPost() {
+      this.isLoading = true;      
       try {
-        const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10');
-        this.posts = response.data; //помещыем в модель постов пост полученный с сервера
+        // загрузка постов после таймаута в 3 сек. 
+         setTimeout(async () => {
+          const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10');
+          this.isLoading = false;
+          this.posts = response.data;          
+          //помещыем в модель постов пост полученный с сервера
+        }, 3000);
+        
       } catch(e) {
         console.log('Произошла ошибка. Повторите попытку позже')
       }
     }
   },
 
-  mounted: {
-    
+  mounted() {
+    this.fetchPost(); // загрузка постов с АПИ сразу при загрузхке страницы
   }
 }
 </script>
