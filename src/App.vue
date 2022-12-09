@@ -32,8 +32,9 @@
 </style>
   
 <script>
-import PostForm from "@/components/PostForm.vue"
-import PostList from "@/components/PostList.vue"
+import PostForm from "@/components/PostForm";
+import PostList from "@/components/PostList";
+import axios from 'axios';
 
 export default {
   components: {
@@ -42,13 +43,7 @@ export default {
 
   data() {
     return {
-      posts: [
-        {id: 3, title: 'Lorem ipsum', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum'},
-
-        {id: 2, title: 'Lorem ipsum', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum'},
-
-        {id: 1, title: 'Lorem ipsum', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum'}
-      ],
+      posts: [],
       popupVisible: false,
     }
   },
@@ -61,10 +56,24 @@ export default {
     },
     removePost(post) {
       this.posts = this.posts.filter(p => p.id !== post.id); // фильтруем список постов по id, что не совпадает по id оставляем
-    },
+    },    
     showPopup() {
       this.popupVisible = true;
+    },
+
+    //получаем данные по API
+    async fetchPost() {
+      try {
+        const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10');
+        this.posts = response.data; //помещыем в модель постов пост полученный с сервера
+      } catch(e) {
+        console.log('Произошла ошибка. Повторите попытку позже')
+      }
     }
+  },
+
+  mounted: {
+    
   }
 }
 </script>
