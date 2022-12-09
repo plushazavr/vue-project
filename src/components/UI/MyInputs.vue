@@ -1,5 +1,9 @@
 <template>
-  <input class="input" type="text">
+  <input
+    :value="modelValue"
+    @input="updateInput"
+    class="input"
+    type="text">
 </template>
 
 <style scoped>
@@ -14,6 +18,15 @@
 
 <script>
 export default {
-name: 'my-inputs'
+  name: 'my-inputs',
+  props: {
+    modelValue: [String, Number]
+  },
+
+  methods: {
+    updateInput(event) {
+      this.$emit('update:modelValue', event.target.value)
+    }
+  }
 }
 </script>
