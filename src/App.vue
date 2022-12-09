@@ -1,6 +1,11 @@
 <template>
   <div class="app">
-    <post-form @create="createPost" />
+    <my-buttons
+      @click="showPopup">Написать пост</my-buttons>
+    <my-popups v-model:show="popupVisible">
+      <post-form @create="createPost" />
+    </my-popups>
+
     <post-list
       :posts="posts"
       @remove="removePost"
@@ -44,6 +49,7 @@ export default {
 
         {id: 1, title: 'Lorem ipsum', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum'}
       ],
+      popupVisible: false,
     }
   },
 
@@ -51,9 +57,13 @@ export default {
     createPost(post) {
       console.log(post)
       this.posts.unshift(post); // кидаем пост в массив
+      this.popupVisible = false;
     },
     removePost(post) {
-      this.posts = this.posts.filter(p => p.id !== post.id)
+      this.posts = this.posts.filter(p => p.id !== post.id); // фильтруем список постов по id, что не совпадает по id оставляем
+    },
+    showPopup() {
+      this.popupVisible = true;
     }
   }
 }
