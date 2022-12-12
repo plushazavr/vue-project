@@ -6,8 +6,11 @@
       <my-selects
         v-model="selectedSort"
         :options="sortOptions"
-      />
+      /> 
     </div>
+    <my-inputs v-model="searchQuery"
+        placeholder="Поиск...">
+    </my-inputs>
     
     <my-popups v-model:show="popupVisible">
       <post-form @create="createPost"/>
@@ -15,7 +18,7 @@
 
     <div v-if="!isLoading">
       <post-list      
-      :posts="sortedPosts"
+      :posts="sortedAndSearchPosts"
       @remove="removePost"
       />
     </div>
@@ -64,6 +67,7 @@ export default {
       popupVisible: false,
       isLoading: false, //лоадер загрузки постов
       selectedSort: '',
+      searchQuery: '',
       sortOptions: [
         {value: 'title', name: 'По названию'},
         {value: 'body', name: 'По содержимому'},
@@ -112,6 +116,11 @@ export default {
     sortedPosts() {
       return [...this.posts].sort((a, b) => a[this.selectedSort]?.localeCompare(b [this.selectedSort])
       )
+    }, 
+
+    //регистронезависимый поиск и фильтрация постов по названию
+    sortedAndSearchPosts() {
+      return this.sortedPosts.filter(post => post.title.toLowerCase().includes(this.searchQuery.toLowerCase()))
     }
   },
 
