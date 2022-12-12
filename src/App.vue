@@ -1,31 +1,34 @@
 <template>
   <div class="app">
     <div class="app__btns">
-      <my-buttons
-      @click="showPopup">Написать пост</my-buttons>
-      <my-selects
-        v-model="selectedSort"
-        :options="sortOptions"
-      /> 
+      <my-buttons @click="showPopup">Написать пост</my-buttons>
+      <my-selects v-model="selectedSort" :options="sortOptions" />
     </div>
-    <my-inputs v-model="searchQuery"
-        placeholder="Поиск...">
+    <my-inputs v-model="searchQuery" placeholder="Поиск...">
     </my-inputs>
-    
+
     <my-popups v-model:show="popupVisible">
-      <post-form @create="createPost"/>
+      <post-form @create="createPost" />
     </my-popups>
 
     <div v-if="!isLoading">
-      <post-list      
-      :posts="sortedAndSearchPosts"
-      @remove="removePost"
-      />
+      <post-list :posts="sortedAndSearchPosts" @remove="removePost" />
     </div>
-    
-   <div v-else>Идет загрузка...</div>
-  </div>
 
+    <div v-else>Идет загрузка...</div>
+
+    <div class="page__wrapper">
+      <div
+        v-for="pageNumber in totalPages"
+        :key="pageNumber" 
+        :class="{
+          'page__active': page === pageNumber
+        }"
+        class="page"
+        @click="changePage(pageNumber)"
+      >{{ pageNumber }}</div>
+    </div>
+  </div>
 </template>
 
 <style>
@@ -49,6 +52,22 @@
   display: flex;
   justify-content: space-between;
 }
+
+.page__wrapper {
+  display: flex;
+  margin: 15px 0px;
+}
+.page {
+  border: 1px solid black;
+  padding: 10px;
+  cursor: pointer;
+  margin: 0px 10px;
+}
+
+.page__active {
+  border: 2px solid teal;
+  background-color: teal;
+}
 </style>
   
 <script>
@@ -68,6 +87,9 @@ export default {
       isLoading: false, //лоадер загрузки постов
       selectedSort: '',
       searchQuery: '',
+      page: 1,
+      limit: 10,
+      totalPages: 0,
       sortOptions: [
         {value: 'title', name: 'По названию'},
         {value: 'body', name: 'По содержимому'},
@@ -88,14 +110,26 @@ export default {
       this.popupVisible = true;
     },
 
+    changePage(pageNumber) {
+      this.page = pageNumber,
+      this.fetchPost()
+    },
+
     //получаем данные по API
     async fetchPost() {            
       try {
         this.isLoading = true;
         // загрузка постов после таймаута в 3 сек. 
          setTimeout(async () => {
-          const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10');
+          const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
+            params: {
+              _page: this.page,
+              _limit: this.limit,
+            }
+          });
           this.isLoading = false;
+          //вычесление кол-ва страниц с округлением в большую сторону
+          this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)          
           this.posts = response.data;          
           //помещыем в модель постов пост полученный с сервера
         }, 3000);
