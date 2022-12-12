@@ -15,11 +15,17 @@
 
 <script>
 export default {
+  data() {
+    return {
+      modelValue: ''
+    }
+  },
   name: 'my-selects',
   props: {
-    modelValue: {
-      type: String
-    },
+    // так не работает, надо прописать в дате modelValue как погайду Vue3
+    // modelValue: {
+    //   type: String
+    // },
     options: {
       type: Array,
       default: () => []
