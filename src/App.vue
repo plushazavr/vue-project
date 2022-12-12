@@ -1,14 +1,21 @@
 <template>
   <div class="app">
-    <my-buttons
+    <div class="app__btns">
+      <my-buttons
       @click="showPopup">Написать пост</my-buttons>
+      <my-selects
+        v-model="selectedSort"
+        :options="sortOptions"
+      />
+    </div>
+    
     <my-popups v-model:show="popupVisible">
-      <post-form @create="createPost" />
+      <post-form @create="createPost"/>
     </my-popups>
 
     <div v-if="!isLoading">
       <post-list      
-      :posts="posts"
+      :posts="sortedPosts"
       @remove="removePost"
       />
     </div>
@@ -33,6 +40,12 @@
   align-items: center;
   padding-top: 20px;
 }
+
+.app__btns {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
 </style>
   
 <script>
@@ -50,6 +63,11 @@ export default {
       posts: [],
       popupVisible: false,
       isLoading: false, //лоадер загрузки постов
+      selectedSort: '',
+      sortOptions: [
+        {value: 'title', name: 'По названию'},
+        {value: 'body', name: 'По содержимому'},
+      ]
     }
   },
 
@@ -67,9 +85,9 @@ export default {
     },
 
     //получаем данные по API
-    async fetchPost() {
-      this.isLoading = true;      
+    async fetchPost() {            
       try {
+        this.isLoading = true;
         // загрузка постов после таймаута в 3 сек. 
          setTimeout(async () => {
           const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10');
@@ -86,6 +104,24 @@ export default {
 
   mounted() {
     this.fetchPost(); // загрузка постов с АПИ сразу при загрузхке страницы
+  },
+
+  computed: {
+
+    // сортировка без мутации основного массива
+    sortedPosts() {
+      return [...this.posts].sort((a, b) => a[this.selectedSort]?.localeCompare(b [this.selectedSort])
+      )
+    }
+  },
+
+  watch: {
+  //   // сортировка с мутацией основного массива
+  //   selectedSort(newValue) {
+  //     this.posts.sort((a, b) => {
+  //       return a[newValue]?.localeCompare(b[newValue])
+  //     })
+  //   }
   }
 }
 </script>
