@@ -1,13 +1,18 @@
-<template>
-  <div class="app">
-    <router-view></router-view>
+<template>  
+  <div class="app">           
+    <navbar></navbar>
+    <div class="container">
+      <router-view></router-view>
+    </div>
+    
   </div>
   
 </template>
 
 <script>
+import Navbar from '@/components/Navbar.vue'
 export default {
-
+  components: { Navbar },
 }
 </script>
 
@@ -17,8 +22,11 @@ export default {
   padding: 0;
   box-sizing: border-box;
 }
-
 .app {
+  width: 100%;
+}
+
+.container {
   max-width: 880px;
   margin: 0px auto;
   display: flex;
