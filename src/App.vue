@@ -17,7 +17,10 @@
 
     <div v-else>Идет загрузка...</div>
 
-    <div class="page__wrapper">
+    <div ref="observer" class="observer"></div>
+
+    <!-- пагинация, можно вынести в отдельный компонент -->
+    <!-- <div class="page__wrapper">
       <div
         v-for="pageNumber in totalPages"
         :key="pageNumber" 
@@ -27,7 +30,7 @@
         class="page"
         @click="changePage(pageNumber)"
       >{{ pageNumber }}</div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -65,8 +68,9 @@
 }
 
 .page__active {
-  border: 2px solid teal;
   background-color: teal;
+  color: white;
+  border: 1px solid teal;
 }
 </style>
   
@@ -110,10 +114,11 @@ export default {
       this.popupVisible = true;
     },
 
-    changePage(pageNumber) {
-      this.page = pageNumber,
-      this.fetchPost()
-    },
+    // ДЛЯ ПАГИНАЦИИ
+    // changePage(pageNumber) {
+    //   this.page = pageNumber
+    //   //this.fetchPost()
+    // },
 
     //получаем данные по API
     async fetchPost() {            
@@ -129,19 +134,60 @@ export default {
           });
           this.isLoading = false;
           //вычесление кол-ва страниц с округлением в большую сторону
-          this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)          
+          this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit);
+          
+          // перезаписываем посты
           this.posts = response.data;          
           //помещыем в модель постов пост полученный с сервера
-        }, 3000);
+        }, 1000);
+        
+      } catch(e) {
+        console.log('Произошла ошибка. Повторите попытку позже')
+      }
+    },
+
+    async loadMorePost() {            
+      try {
+        this.page += 1;
+        // загрузка постов после таймаута в 3 сек. 
+         setTimeout(async () => {
+          const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
+            params: {
+              _page: this.page,
+              _limit: this.limit,
+            }
+          });
+          //вычесление кол-ва страниц с округлением в большую сторону
+          this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit);
+          //создаем новый массив, добавляем в конец новые посты с сервера   
+          this.posts = [...this.posts, ...response.data];          
+          //помещыем в модель постов пост полученный с сервера
+        });
         
       } catch(e) {
         console.log('Произошла ошибка. Повторите попытку позже')
       }
     }
+
   },
 
   mounted() {
     this.fetchPost(); // загрузка постов с АПИ сразу при загрузхке страницы
+
+    console.log(this.$refs.observer)
+    // Intersection Observer API для бесконечного скролла
+    const options = {
+      rootMargin: '0px',
+      threshold: 1.0
+    }
+    const callback = (entries, observer) => {
+      if(entries[0].isIntersecting) {
+        this.loadMorePost();
+      }
+    };
+    const observer = new IntersectionObserver(callback, options);
+    observer.observe(this.$refs.observer)
+
   },
 
   computed: {
@@ -159,6 +205,10 @@ export default {
   },
 
   watch: {
+    // НАБЛЮДАТЕЛЬ ДЛЯ ПАГИНАЦИИ
+    // page() {
+    //   this.fetchPost()
+    // }
   //   // сортировка с мутацией основного массива
   //   selectedSort(newValue) {
   //     this.posts.sort((a, b) => {
