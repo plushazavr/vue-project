@@ -37,20 +37,10 @@
 </style>
 
 <script>
+import toggleMixin from '@/mixins/toggleMixin';
+
 export default {
   name: 'my-popups',
-  props: {
-    // видим ли модальное окно или нет 
-    show : {
-      type: Boolean,
-      default: false
-    }
-  },
-
-  methods: {
-    hidePopup() {
-      this.$emit('update:show', false)
-    }
-  }
+  mixins: [toggleMixin],
 }
 </script>
