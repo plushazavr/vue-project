@@ -5,8 +5,8 @@
       <div><strong>Описание:</strong>{{ post.body }}</div>
     </div>
     <div class="post__btns">
-      <my-buttons
-        @click="$emit('remove', post)">Удалить</my-buttons>
+      <my-buttons @click="$router.push(`/post/${post.id}`)" style="margin-right: 10px">Открыть</my-buttons>
+      <my-buttons @click="$emit('remove', post)">Удалить</my-buttons>
     </div>
     
   </div>
