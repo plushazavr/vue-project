@@ -17,7 +17,7 @@
 
     <div v-else>Идет загрузка...</div>
 
-    <div ref="observer" class="observer"></div>
+    <div v-intersection="loadMorePost" class="observer"></div>
 
     <!-- пагинация, можно вынести в отдельный компонент -->
     <!-- <div class="page__wrapper">
@@ -160,21 +160,21 @@ export default {
   mounted() {
     this.fetchPost(); // загрузка постов с АПИ сразу при загрузхке страницы
 
-    console.log(this.$refs.observer)
-    // Intersection Observer API для бесконечного скролла
-    const options = {
-      rootMargin: '0px',
-      threshold: 1.0
-    }
-    const callback = (entries, observer) => {
-      if(entries[0].isIntersecting && this.page < this.totalPages) {
-        this.loadMorePost();
-      }
-    };
-    const observer = new IntersectionObserver(callback, options);
-    observer.observe(this.$refs.observer)
+        //Будет описано в пользовательской директиве
+  //   // Intersection Observer API для бесконечного скролла
+  //   const options = {
+  //     rootMargin: '0px',
+  //     threshold: 1.0
+  //   }
+  //   const callback = (entries, observer) => {
+  //     if(entries[0].isIntersecting && this.page < this.totalPages) {
+  //       this.loadMorePost();
+  //     }
+  //   };
+  //   const observer = new IntersectionObserver(callback, options);
+  //   observer.observe(this.$refs.observer)
 
-  },
+ },
 
   computed: {
 
